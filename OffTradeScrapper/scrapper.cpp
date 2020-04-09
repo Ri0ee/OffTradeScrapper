@@ -1,5 +1,7 @@
 #include "scrapper.h"
 
+#define ENTRY_COUNT 10
+
 long long int GetTimePassed(std::string date_time_) {
 	auto now = std::chrono::system_clock::now();
 	auto in_time_t = std::chrono::system_clock::to_time_t(now);
@@ -44,8 +46,6 @@ std::optional<std::vector<TradeScrapper::TradeData::Item>> TradeScrapper::ParseR
 	for (auto& page : page_) {
 		using nlohmann::json;
 		json page_json = json::parse(page);
-
-		//std::cout << page_json.dump(1, '\t') << "\n";
 
 		page_json = page_json["result"];
 
@@ -106,6 +106,7 @@ std::optional<std::vector<TradeScrapper::TradeData::Item>> TradeScrapper::ParseR
 std::optional<std::vector<std::string>> TradeScrapper::GetTradeRawPage(TradeScrapper::TradeRequest::Filter filter_) {
 	using namespace httplib;
 	SSLClient client("www.pathofexile.com");
+	client.set_timeout_sec(20);
 
 	std::cout << filter_.type;
 
@@ -139,7 +140,16 @@ std::optional<std::vector<std::string>> TradeScrapper::GetTradeRawPage(TradeScra
 		query["query"]["filters"]["misc_filters"]["filters"]["corrupted"]["option"] = filter_.corrupted;
 
 	std::string query_body = query.dump();
-	auto result = client.Post("/api/trade/search/Metamorph", query_body, "application/json");
+	auto result = client.Post("/api/trade/search/Delirium", query_body, "application/json");
+
+	if (result == nullptr) {
+		std::cout << "\nFailed to get fetch data page.\n";
+		return {};
+	}
+
+	if (result->status != 200) {
+		std::cout << "\nError, response code: " << result->status << "\n";
+	}
 
 	json response_json = json::parse(result->body);
 	json result_line_json = response_json["result"];
@@ -152,7 +162,7 @@ std::optional<std::vector<std::string>> TradeScrapper::GetTradeRawPage(TradeScra
 	std::vector<std::string> page;
 	std::string url = ("/api/trade/fetch/");
 	bool first = true;
-	for (int i = 1; i <= hash_lines.size(); i++) {
+	for (int i = 1; i <= std::min((int)hash_lines.size(), ENTRY_COUNT); i++) {
 		if (first)
 			first = false;
 		else
@@ -160,13 +170,37 @@ std::optional<std::vector<std::string>> TradeScrapper::GetTradeRawPage(TradeScra
 
 		url.append(hash_lines[i - 1]);
 
-		if (i % 10 == 0 || i == hash_lines.size()) {
+		if (i % 10 == 0 || i == std::min((int)hash_lines.size(), ENTRY_COUNT)) {
 			url.append("?query=");
 			url.append(id);
 
-			result = client.Get(url.c_str());
-			if(result != nullptr)
-				page.push_back(result->body);
+			bool success = false; 
+
+			while (!success) {
+				result = client.Get(url.c_str());
+				if (result != nullptr) {
+					json result_json = json::parse(result->body);
+					if (result_json.find("error") != result_json.end()) {
+						int code = result_json["error"]["code"].get<int>();
+						std::string message = result_json["error"]["message"].get<std::string>();
+						
+						if (code == 3)
+							std::cout << " {rl} ";
+						else
+							std::cout << " {" << code << "} ";
+
+						std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+					}
+					else {
+						page.push_back(result->body);
+						success = true;
+					}
+				}
+				else {
+					std::cout << " {nullptr result} ";
+					std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+				}
+			}
 
 			url = "/api/trade/fetch/";
 			first = true;
@@ -175,7 +209,7 @@ std::optional<std::vector<std::string>> TradeScrapper::GetTradeRawPage(TradeScra
 		}
 	}
 
-	std::cout << "\n";
+	std::cout << " Parsed " << std::min((int)hash_lines.size(), ENTRY_COUNT) << " entries\n";
 
 	return page;
 }
@@ -184,7 +218,7 @@ std::optional<double> TradeScrapper::GetExPrice() {
 	using namespace httplib;
 	SSLClient client("poe.ninja");
 
-	auto response = client.Get("/api/data/currencyoverview?league=Metamorph&type=Currency&language=en");
+	auto response = client.Get("/api/data/currencyoverview?league=Delirium&type=Currency&language=en");
 
 	using nlohmann::json;
 	json response_json = json::parse(response->body);

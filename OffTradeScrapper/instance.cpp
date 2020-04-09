@@ -28,12 +28,12 @@ int Instance::Run() {
 		"Awakened Deadly Ailments Support", "Awakened Fork Support", "Awakened Greater Multiple Projectiles Support",
 		"Awakened Swift Affliction Support", "Awakened Vicious Projectiles Support", "Awakened Void Manipulation Support",
 		"Awakened Added Fire Damage Support", "Awakened Ancestral Call Support", "Awakened Brutality Support",
-		"Awakened Burning Damage Support", "Awakened Elemental Damage With Attacks Support",
+		"Awakened Burning Damage Support", "Awakened Elemental Damage with Attacks Support",
 		"Awakened Fire Penetration Support", "Awakened Generosity Support", "Awakened Melee Physical Damage Support",
 		"Awakened Melee Splash Support", "Awakened Multistrike Support", "Awakened Added Chaos Damage Support",
 		"Awakened Added Lightning Damage Support", "Awakened Blasphemy Support", "Awakened Cast While Channelling Support",
 		"Awakened Controlled Destruction Support", "Awakened Curse On Hit Support", "Awakened Elemental Focus Support",
-		"Awakened Increased Area Of Effect Support", "Awakened Lightning Penetration Support", "Awakened Minion Damage Support",
+		"Awakened Increased Area of Effect Support", "Awakened Lightning Penetration Support", "Awakened Minion Damage Support",
 		"Awakened Spell Cascade Support", "Awakened Spell Echo Support", "Awakened Unbound Ailments Support",
 		"Awakened Unleash Support"
 	};
@@ -55,11 +55,14 @@ int Instance::Run() {
 	std::map<std::string, double> average_indexing_time;
 	int avg_counter = 0;
 
-	std::string log_file_name = "log_" + CurrentTimeAndDate() + ".txt";
-	std::fstream log_output(log_file_name, std::ios::out | std::ios::trunc);
+	//std::string log_file_name = "log_" + CurrentTimeAndDate() + ".txt";
+	//std::fstream log_output(log_file_name, std::ios::out | std::ios::trunc);
 
 	for (auto& req : data.value().information) {
 		avg_counter = 0;
+
+		if (req.second.size() == 0)
+			continue;
 
 		double minimal_price = 0;
 		if (req.second.front().price.currency == "exa") {
@@ -70,7 +73,7 @@ int Instance::Run() {
 		}
 
 		for (auto& item : req.second) {
-			log_output << req.first << ": " << "level:" << item.gem.level << "\t\tquality:" << item.quality << "\t\tcorrupted:" << item.corrupted << "\t\t" << item.note << "\n";
+			//log_output << req.first << ": " << "level:" << item.gem.level << "\t\tquality:" << item.quality << "\t\tcorrupted:" << item.corrupted << "\t\t" << item.note << "\n";
 			if (item.price.currency == "exa") {
 				if (item.price.value * EX_PRICE > minimal_price + EX_PRICE * 10)
 					continue;
@@ -103,6 +106,9 @@ int Instance::Run() {
 	for (auto& req : data.value().information) {
 		avg_counter = 0;
 
+		if (req.second.size() == 0)
+			continue;
+
 		double minimal_price = 0;
 		if (req.second.front().price.currency == "exa") {
 			minimal_price = req.second.front().price.value * EX_PRICE;
@@ -114,7 +120,7 @@ int Instance::Run() {
 		for (auto& item : req.second) {
 			average_indexing_time[req.first] = average_indexing_time[req.first] + (item.listing_time / req.second.size());
 
-			log_output << req.first << ": " << "level:" << item.gem.level << "\t\tquality:" << item.quality << "\t\tcorrupted:" << item.corrupted << "\t\t" << item.note << "\n";
+			//log_output << req.first << ": " << "level:" << item.gem.level << "\t\tquality:" << item.quality << "\t\tcorrupted:" << item.corrupted << "\t\t" << item.note << "\n";
 			if (item.price.currency == "exa") {
 				if (item.price.value * EX_PRICE > minimal_price + EX_PRICE * 10)
 					continue;

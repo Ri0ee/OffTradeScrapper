@@ -4,11 +4,14 @@
 #include <string>
 #include <optional>
 #include <iostream>
+#include <algorithm>
+#include <thread>
+#include <chrono>
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "httplib.h"
 
-#include "json.hpp"
+#include "json.hpp" 
 
 class TradeScrapper {
 public:
