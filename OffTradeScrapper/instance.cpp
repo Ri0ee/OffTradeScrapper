@@ -22,7 +22,7 @@ int Instance::Run() {
 
 	std::cout << "Using Exalted Orb price: " << EX_PRICE << " chaos\n";
 
-	std::vector<std::string> gem_types = {
+	/*std::vector<std::string> gem_types = {
 		"Awakened Curse On Hit Support", "Awakened Added Cold Damage Support", "Awakened Arrow Nova Support",
 		"Awakened Cast On Critical Strike Support", "Awakened Chain Support", "Awakened Cold Penetration Support",
 		"Awakened Deadly Ailments Support", "Awakened Fork Support", "Awakened Greater Multiple Projectiles Support",
@@ -35,6 +35,22 @@ int Instance::Run() {
 		"Awakened Controlled Destruction Support", "Awakened Curse On Hit Support", "Awakened Elemental Focus Support",
 		"Awakened Increased Area of Effect Support", "Awakened Lightning Penetration Support", "Awakened Minion Damage Support",
 		"Awakened Spell Cascade Support", "Awakened Spell Echo Support", "Awakened Unbound Ailments Support",
+		"Awakened Unleash Support"
+	};*/
+
+	std::vector<std::string> gem_types = {
+		"Awakened Curse On Hit Support", "Awakened Added Cold Damage Support",
+		"Awakened Cast On Critical Strike Support", "Awakened Chain Support", "Awakened Cold Penetration Support",
+		"Awakened Deadly Ailments Support", "Awakened Fork Support", "Awakened Greater Multiple Projectiles Support",
+		"Awakened Swift Affliction Support", "Awakened Vicious Projectiles Support", "Awakened Void Manipulation Support",
+		"Awakened Ancestral Call Support", "Awakened Brutality Support",
+		"Awakened Elemental Damage with Attacks Support",
+		"Awakened Fire Penetration Support", "Awakened Melee Physical Damage Support",
+		"Awakened Melee Splash Support", "Awakened Multistrike Support",
+		"Awakened Added Lightning Damage Support", "Awakened Cast While Channelling Support",
+		"Awakened Controlled Destruction Support", "Awakened Curse On Hit Support", "Awakened Elemental Focus Support",
+		"Awakened Increased Area of Effect Support", "Awakened Lightning Penetration Support", "Awakened Minion Damage Support",
+		"Awakened Spell Cascade Support", "Awakened Spell Echo Support",
 		"Awakened Unleash Support"
 	};
 
